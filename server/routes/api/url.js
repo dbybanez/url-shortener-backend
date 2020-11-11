@@ -107,27 +107,27 @@ async function createURL(url, slug) {
                 }
                 result.status = false
                 resolve(result)
+              } else {
+                let code = nanoid(6);
+                code = code.toUpperCase()
+                let query = `INSERT INTO urls SET ?`
+                connection.query(query, {URL: url, Slug: slug, Code: code} , function (error, results, fields) {
+                  if(error) throw error
+                  let res = {
+                    status: true,
+                    data: {
+                      "link": `https://tinyy.link/${slug}`,
+                      "url": url,
+                      "slug": slug,
+                      "code": code,
+                      "id": results.insertId
+                    }
+                  }
+                  resolve(res)
+                })
               }
             })
           }
-
-          let code = nanoid(6);
-          code = code.toUpperCase()
-          let query = `INSERT INTO urls SET ?`
-          connection.query(query, {URL: url, Slug: slug, Code: code} , function (error, results, fields) {
-            if(error) throw error
-            let res = {
-              status: true,
-              data: {
-                "link": `https://tinyy.link/${slug}`,
-                "url": url,
-                "slug": slug,
-                "code": code,
-                "id": results.insertId
-              }
-            }
-            resolve(res)
-          })
         }
       })
     } catch (err) {
